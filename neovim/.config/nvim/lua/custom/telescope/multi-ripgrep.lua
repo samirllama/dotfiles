@@ -1,1 +1,0 @@
-../../../../../dotfiles/.config/nvim/lua/custom/telescope/multi-ripgrep.lua

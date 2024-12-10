@@ -1,1 +1,0 @@
-../../../dotfiles/.config/nvim/plugin/menu.vim
