@@ -3,7 +3,7 @@
 -- First ensure lazy is installed and available
 require("config.lazy")
 
--- Now setup plugins
+-- Then etup plugins
 require("lazy").setup({
 	spec = {
 		{ import = "user.plugins" },
@@ -16,6 +16,7 @@ require("lazy").setup({
 	},
 })
 
--- Load other configurations after plugins
-require("user.keymaps")
-require("user.autocmds")
+-- Load core configurations
+require("user.settings") -- Global settings
+require("user.keymaps") -- Key mappings
+require("user.autocmds") -- Autocommands
