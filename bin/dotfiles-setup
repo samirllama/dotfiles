@@ -1,0 +1,120 @@
+#!/usr/bin/env bash
+
+set -Eeuo pipefail
+trap cleanup SIGINT SIGTERM ERR EXIT
+
+# Script location
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+DOTFILES_DIR="$HOME/dotfiles"
+
+usage() {
+  cat << EOF
+Usage: $(basename "${BASH_SOURCE[0]}") [-h] [-v] [-c]
+
+Manage dotfiles setup including:
+- Configure git settings
+- Set up bin directory and permissions
+- Create necessary symlinks
+
+Available options:
+-h, --help      Print this help and exit
+-v, --verbose   Print script debug info
+-c, --config    Configure git settings
+EOF
+  exit
+}
+
+cleanup() {
+  trap - SIGINT SIGTERM ERR EXIT
+  msg "${YELLOW}Cleaning up...${NOFORMAT}"
+}
+
+setup_colors() {
+  if [[ -t 2 ]] && [[ -z "${NO_COLOR-}" ]] && [[ "${TERM-}" != "dumb" ]]; then
+    NOFORMAT='\033[0m' RED='\033[0;31m' GREEN='\033[0;32m' ORANGE='\033[0;33m' BLUE='\033[0;34m' PURPLE='\033[0;35m' CYAN='\033[0;36m' YELLOW='\033[1;33m'
+  else
+    NOFORMAT='' RED='' GREEN='' ORANGE='' BLUE='' PURPLE='' CYAN='' YELLOW=''
+  fi
+}
+
+msg() {
+  echo >&2 -e "${1-}"
+}
+
+die() {
+  local msg=$1
+  local code=${2-1}
+  msg "$msg"
+  exit "$code"
+}
+
+setup_bin_directory() {
+    msg "${BLUE}Setting up bin directory...${NOFORMAT}"
+    
+    # Create bin directory if it doesn't exist
+    mkdir -p "$DOTFILES_DIR/bin"
+    
+    # Copy existing scripts from .local/bin if they exist
+    if [ -d "$HOME/.local/bin" ]; then
+        msg "${YELLOW}Copying existing scripts from .local/bin...${NOFORMAT}"
+        cp "$HOME/.local/bin"/* "$DOTFILES_DIR/bin/" 2>/dev/null || true
+    fi
+    
+    # Set proper permissions
+    msg "${YELLOW}Setting executable permissions...${NOFORMAT}"
+    find "$DOTFILES_DIR/bin" -type f -exec chmod +x {} \;
+    
+    # Create symlinks using stow
+    msg "${YELLOW}Creating symlinks with stow...${NOFORMAT}"
+    cd "$DOTFILES_DIR" || die "Could not change to dotfiles directory"
+    stow bin || die "Failed to stow bin directory"
+    
+    msg "${GREEN}Bin directory setup complete${NOFORMAT}"
+}
+
+configure_git() {
+    msg "${BLUE}Configuring git settings...${NOFORMAT}"
+    local current_dir="$PWD"
+    local bp_dir="$HOME/Projects/bp"
+
+    if [[ "$current_dir" == "$bp_dir"* ]]; then
+        git config --global user.name "Your Work Name"
+        git config --global user.email "your.work@email.com"
+        msg "${GREEN}Git configured with work credentials${NOFORMAT}"
+    else
+        git config --global user.name "Samir Lama"
+        git config --global user.email "samirllama@gmail.com"
+        msg "${GREEN}Git configured with personal credentials${NOFORMAT}"
+    fi
+}
+
+parse_params() {
+  while :; do
+    case "${1-}" in
+    -h | --help) usage ;;
+    -v | --verbose) set -x ;;
+    -c | --config) CONFIGURE_GIT=1 ;;
+    --no-color) NO_COLOR=1 ;;
+    -?*) die "Unknown option: $1" ;;
+    *) break ;;
+    esac
+    shift
+  done
+
+  return 0
+}
+
+main() {
+    parse_params "$@"
+    setup_colors
+    
+    setup_bin_directory
+    
+    if [ "${CONFIGURE_GIT-0}" = 1 ]; then
+        configure_git
+    fi
+    
+    msg "${GREEN}Dotfiles setup completed successfully!${NOFORMAT}"
+}
+
+main "$@"
