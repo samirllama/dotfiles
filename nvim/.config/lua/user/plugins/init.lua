@@ -7,17 +7,20 @@ return {
 	require("user.plugins.lsp"),
 	require("user.plugins.treesitter"),
 	require("user.plugins.completion"),
-	require("user.plugins.colorscheme"), -- Add this line
+	require("user.plugins.colorscheme"),
 	require("user.plugins.harpoon"),
-	require("user.plugins.mini"),
+	-- require("user.plugins.mini"), -- Disabled as snacks provides these features
 	require("user.plugins.statusline"),
-	require("user.plugins.notify"),
+	-- require("user.plugins.notify"), -- Disabled as snacks provides notifications
 	require("user.plugins.avante"),
 	require("user.plugins.oil"),
+	require("user.plugins.snack"),
 
-	-- Core dependencies that don't need special config
+	-- Core dependencies
 	{ "nvim-lua/plenary.nvim" },
 	{ "folke/lazy.nvim" },
+	{ "folke/edgy.nvim" },
+	{ "MunifTanjim/nui.nvim" },
 	{ "tpope/vim-surround" },
 	{ "junegunn/fzf", build = "./install --all" },
 }

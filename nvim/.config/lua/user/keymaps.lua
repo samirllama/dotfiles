@@ -99,3 +99,24 @@ set("n", "<leader>dl", "<cmd>DBUILastQueryInfo<CR>", { desc = "Show Last Query" 
 -- Add new SQL-specific keymaps
 set("n", "<leader>qf", vim.lsp.buf.format, { desc = "Format SQL" })
 set("n", "<leader>qh", "<cmd>DBUIHideResult<CR>", { desc = "Hide Query Result" })
+
+-- Better window navigation
+set("n", "<C-h>", "<C-w>h", { desc = "Navigate left window" })
+set("n", "<C-j>", "<C-w>j", { desc = "Navigate down window" })
+set("n", "<C-k>", "<C-w>k", { desc = "Navigate up window" })
+set("n", "<C-l>", "<C-w>l", { desc = "Navigate right window" })
+
+-- Window management
+set("n", "<leader>sv", "<C-w>v", { desc = "Split window vertically" })
+set("n", "<leader>sh", "<C-w>s", { desc = "Split window horizontally" })
+set("n", "<leader>se", "<C-w>=", { desc = "Make splits equal size" })
+set("n", "<leader>sx", ":close<CR>", { desc = "Close current split" })
+
+-- Oil.nvim
+set("n", "-", "<CMD>Oil<CR>", { desc = "Open parent directory" })
+
+-- Clear search highlights
+set("n", "<leader>nh", ":nohl<CR>", { desc = "Clear search highlights" })
+
+-- Better paste
+set("v", "p", '"_dP', { desc = "Better paste" })
