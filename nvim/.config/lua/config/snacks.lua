@@ -19,37 +19,68 @@ local function term_nav(dir)
 end
 
 function M.setup()
-	local hostname = io.popen("hostname"):read("*a"):gsub("%s+", "")
-
 	return {
 		dashboard = {
 			enabled = true,
-			preset = {
-				header = string.rep("\n", 4) .. logo .. "\n\n",
-				keys = {
-					{ icon = " ", key = "f", desc = "Find File", action = ":lua Snacks.dashboard.pick('files')" },
-					{ icon = " ", key = "g", desc = "Find Text", action = ":lua Snacks.dashboard.pick('live_grep')" },
-					{ icon = " ", key = "r", desc = "Recent Files", action = ":lua Snacks.dashboard.pick('oldfiles')" },
-					{
-						icon = " ",
-						key = "c",
-						desc = "Config",
-						action = ":lua Snacks.dashboard.pick('files', {cwd = vim.fn.stdpath('config')})",
-					},
-					{ icon = " ", key = "s", desc = "Restore Session", section = "session" },
-					{ icon = " ", key = "q", desc = "Quit", action = ":qa" },
-					{ icon = " ", key = "l", desc = "Lazy", action = ":Lazy" },
-					{ icon = "󰊳 ", key = "u", desc = "Update", action = ":Lazy update" },
-				},
-			},
 			sections = {
-				{ section = "header" },
-				{ icon = " ", title = "Actions", section = "keys", indent = 2, padding = 1 },
+				-- Left pane with chafa image
 				{
 					section = "terminal",
-					title = "Welcome",
-					icon = "󰙅",
-					cmd = "echo Welcome back, " .. hostname .. "! | cowsay -f tux",
+					cmd = "chafa ~/Downloads/dark_samu.png --format symbols --symbols vhalf --size 60x17 --stretch; sleep .1",
+					height = 17,
+					padding = 1,
+				},
+				-- Right pane with actions and recent files
+				{
+					pane = 2,
+					{
+						section = "keys",
+						gap = 1,
+						padding = 1,
+						items = {
+							{
+								icon = " ",
+								key = "f",
+								desc = "Find File",
+								action = ":lua Snacks.dashboard.pick('files')",
+							},
+							{
+								icon = " ",
+								key = "g",
+								desc = "Find Text",
+								action = ":lua Snacks.dashboard.pick('live_grep')",
+							},
+							{
+								icon = " ",
+								key = "r",
+								desc = "Recent Files",
+								action = ":lua Snacks.dashboard.pick('oldfiles')",
+							},
+							{
+								icon = " ",
+								key = "c",
+								desc = "Config",
+								action = ":lua Snacks.dashboard.pick('files', {cwd = vim.fn.stdpath('config')})",
+							},
+							{ icon = " ", key = "s", desc = "Restore Session", section = "session" },
+							{ icon = " ", key = "q", desc = "Quit", action = ":qa" },
+							{ icon = " ", key = "l", desc = "Lazy", action = ":Lazy" },
+						},
+					},
+					{
+						icon = " ",
+						title = "Recent Files",
+						section = "recent_files",
+						indent = 2,
+						padding = 1,
+					},
+					{
+						icon = " ",
+						title = "Projects",
+						section = "projects",
+						indent = 2,
+						padding = 1,
+					},
 				},
 			},
 		},

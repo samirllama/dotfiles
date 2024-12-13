@@ -1,0 +1,4 @@
+# Create the directory if it doesn't exist
+mkdir -p ~/.config/nvim/
+# Download a sample image (you can replace this with your own)
+curl -o ~/.config/nvim/dashboard-logo.png https://raw.githubusercontent.com/neovim/neovim.github.io/master/logos/neovim-logo-300x87.png 

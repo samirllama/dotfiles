@@ -1,60 +1,75 @@
-local setup = function()
-	-- Autoformatting Setup
+local M = {}
+
+function M.setup()
 	local conform = require("conform")
+
 	conform.setup({
+		formatters_by_ft = {
+			python = { "black", "isort" },
+			javascript = { "prettier" },
+			typescript = { "prettier" },
+			javascriptreact = { "prettier" },
+			typescriptreact = { "prettier" },
+			go = {
+				"gopls",
+				"goimports-reviser",
+			},
+			lua = { "stylua" },
+		},
+		format_on_save = {
+			timeout_ms = 3000,
+			lsp_fallback = true,
+		},
 		formatters = {
-			["ml-format"] = {
-				command = "./_build/_private/default/.dev-tool/ocamlformat/ocamlformat/target/bin/ocamlformat",
-				args = {
-					"--enable-outside-detected-project",
-					"--name",
-					"$FILENAME",
-					"-",
+			black = {
+				prepend_args = { "--fast" },
+			},
+			isort = {
+				prepend_args = { "--profile", "black" },
+			},
+			["goimports-reviser"] = {
+				prepend_args = {
+					"-rm-unused",
+					"-set-alias",
+					"-format",
 				},
 			},
-		},
-		formatters_by_ft = {
-			lua = { "stylua" },
-			blade = { "blade-formatter" },
-			ocaml = { "ml-format" },
-			ocaml_mlx = { "ocamlformat_mlx" },
+			gopls = {
+				command = "gopls",
+				args = { "format" },
+				stdin = true,
+			},
 		},
 	})
 
-	conform.formatters.injected = {
-		options = {
-			ignore_errors = false,
-			lang_to_formatters = {
-				sql = { "sleek" },
-			},
-		},
-	}
+	-- Format command with longer timeout and error handling
+	vim.keymap.set({ "n", "v" }, "<leader>f", function()
+		conform.format({
+			timeout_ms = 5000,
+			lsp_fallback = true,
+			async = true,
+			quiet = false, -- Set to false to see error messages
+		})
+	end, { desc = "Format file or range (in visual mode)" })
 
+	-- Add format on save autocmd with error handling
 	vim.api.nvim_create_autocmd("BufWritePre", {
-		group = vim.api.nvim_create_augroup("custom-conform", { clear = true }),
+		pattern = "*",
 		callback = function(args)
-			local ft = vim.bo.filetype
-			if ft == "ocaml.mlx" then
-				-- Hmmm... this is a little weird,
-				-- it seems like it should be automatic, but that's OK
-				require("conform").format({
+			-- Protect against formatter errors interrupting the save
+			local success, err = pcall(function()
+				conform.format({
 					bufnr = args.buf,
-					formatters = { "ocamlformat_mlx" },
-					lsp_fallback = false,
+					timeout_ms = 5000,
+					lsp_fallback = true,
+					async = false,
 				})
-
-				return
+			end)
+			if not success then
+				vim.notify("Format on save failed: " .. tostring(err), vim.log.levels.WARN)
 			end
-
-			require("conform").format({
-				bufnr = args.buf,
-				lsp_fallback = true,
-				quiet = true,
-			})
 		end,
 	})
 end
 
-setup()
-
-return { setup = setup }
+return M

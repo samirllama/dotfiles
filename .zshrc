@@ -38,15 +38,15 @@ git_current_branch() {
 # Function checks if the current working directory (PWD) starts with $HOME/Projects/bp.
 set_git_config() {
   local current_dir="$PWD"
-  local bp_dir="$HOME/Projects/bp"
+  local work_dir="$HOME/Projects/work_dir"
 
   echo "Current directory: $current_dir"
-  echo "BP directory: $bp_dir"
+  echo "Work directory: $work_dir"
 
-#  if [[ "$current_dir" == "$bp_dir*" ]]; then
+#  if [[ "$current_dir" == "$work_dir*" ]]; then
 #    echo "Setting work credentials"
-#    git config --global user.name "Your Work Name"
-#    git config --global user.email "your.work@email.com"
+#    git config --global user.name "Work Name"
+#    git config --global user.email "work@email.com"
 #  else
 #    echo "Setting personal credentials"
 #    git config --global user.name "S l"
@@ -95,8 +95,6 @@ export NVM_DIR="$HOME/.nvm"
 export PATH="$PATH:$(yarn global bin)"
 export PATH="$PYENV_ROOT/bin:$PATH"
 
-
-
 function pyproject() {
     if [ -z "$1" ]; then
         echo "Please provide a project name."
@@ -118,21 +116,6 @@ function pyproject() {
     echo "Project '$1' created and virtual environment activated."
     echo "You are now in $project_dir"
 }
-
-
-# I! Contents within this block are managed by 'conda init !?
-# __conda_setup="$('/Users/apex/opt/anaconda3/bin/conda' 'shell.zsh' 'hook' 2> /dev/null)"
-# if [ $? -eq 0 ]; then
-#     eval "$__conda_setup"
-# else
-#     if [-f "/Users/apex/opt/anaconda3/etc/profile.d/conda.sh" ]; then
-#         • "/Users/apex/opt/anaconda3/etc/profile.d/conda.sh"
-#     else 
-#         export PATH="/Users/apex/opt/anaconda3/bin:$PATH" 
-#     fi
-# fi 
-# unset __conda_setup
-#<<<-conda-initialize•<<‹
 
 #•python•libs•locations
 # export PYTHTONPATH=$PYTHONPATH:path/to/your/directory
@@ -172,7 +155,36 @@ set_git_config
 eval "$(pyenv init --path)"
 eval "$(pyenv init -)"
 eval "$(starship init zsh)"
+
+# Tmuxifier
 eval "$(tmuxifier init -)"
+
+# FZF
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+
+# FZF configuration
+export FZF_DEFAULT_COMMAND="fd --hidden --strip-cwd-prefix --exclude .git "
+export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
+export FZF_ALT_C_COMMAND="fd --type=d --hidden --strip-cwd-prefix --exclude .git"
+
+export FZF_DEFAULT_OPTS="--height 50% --layout=default --border --color=hl:#2dd4bf"
+
+# Setup fzf previews
+export FZF_CTRL_T_OPTS="--preview 'bat --color=always -n --line-range :500 {}'"
+export FZF_ALT_C_OPTS="--preview 'eza --icons=always --tree --color=always {} | head -200'"
+
+# fzf preview for tmux
+export FZF_TMUX_OPTS=" -p90%,70% "
+
+# Zoxide - Move this after FZF setup
+eval "$(zoxide init zsh)"
+
+# Add zoxide aliases for better integration with fzf
+alias zz='z -'      # Go back to previous directory
+alias zi='z -i'     # Interactive selection using fzf
+alias za='zoxide add'    # Add a directory to zoxide database
+alias zq='zoxide query'  # Query the zoxide database
+alias zl='zoxide query -l'  # List all directories in the database
 
 echo ".zshrc loaded"
 
@@ -181,5 +193,3 @@ export PATH="$PATH:/Users/apex/Library/Python/3.9/bin"
 export PATH="$PATH:/Users/apex/Library/Python/3.9/bin"
 source /opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 source /opt/homebrew/share/zsh-autosuggestions/zsh-autosuggestions.zsh 
-
-[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh

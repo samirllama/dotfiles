@@ -7,12 +7,8 @@ end
 vim.api.nvim_create_autocmd("VimEnter", {
 	group = augroup("alpha_autostart"),
 	callback = function()
-		-- Only start alpha if no arguments were passed and we're not in a git rebase
 		if vim.fn.argc() == 0 and vim.bo.filetype ~= "gitrebase" then
-			-- If a directory was passed, let oil handle it
-			if vim.fn.isdirectory(vim.fn.getcwd()) == 0 then
-				require("alpha").start()
-			end
+			require("alpha").start()
 		end
 	end,
 })

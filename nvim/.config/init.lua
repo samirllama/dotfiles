@@ -19,10 +19,13 @@ require("lazy").setup({
 	},
 })
 
+-- Ensure proper loading of snacks.nvim
+vim.opt.termguicolors = true
+
 -- Load core configurations
 require("user.settings") -- Global settings
 require("user.keymaps") -- Key mappings
 require("user.autocmds") -- Autocommands
 
--- Ensure proper loading of snack.nvim
-vim.opt.termguicolors = true
+-- Disable other dashboard plugins from loading on startup
+vim.g.loaded_alpha = 1
