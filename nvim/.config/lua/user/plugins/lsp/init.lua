@@ -17,15 +17,6 @@ return {
 			},
 			{ "Bilal2453/luvit-meta", lazy = true },
 			{
-				"williamboman/mason.nvim",
-				cmd = "Mason",
-				build = ":MasonUpdate",
-				priority = 100,
-				config = function()
-					require("config.mason").setup()
-				end,
-			},
-			{
 				"williamboman/mason-lspconfig.nvim",
 				priority = 90,
 				dependencies = { "mason.nvim" },
